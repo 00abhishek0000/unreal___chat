@@ -6,6 +6,9 @@ import { useCallback, useState } from "react"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import {BsGithub,BsGoogle} from 'react-icons/bs'
+import axios from "axios";
+import toast,{ Toast } from "react-hot-toast";
+import {signIn} from 'next-auth/react'
 
 type Variant = 'LOGIN' | 'SIGNUP'
 
@@ -34,22 +37,47 @@ const AuthForm = () => {
         setIsLoading(true);
 
         if(variant === 'SIGNUP'){
-            // Axios register
+          axios.post('/api/register',data)
+          .catch(() => toast.error('Something went wrong!'))
+          .finally(() => setIsLoading(false))
         }
-        if(variant === 'LOGIN'){
-            // next auth signin
+        if (variant === 'LOGIN') {
+          signIn('credentials', {
+            ...data,
+            redirect: false
+          })
+          .then((callback) => {
+            if (callback?.error) {
+              toast.error('Invalid credentials!');
+            }
+    
+            if (callback?.ok && !callback?.error) {
+              toast.success('logged in');
+            }
+          })
+          .finally(() => setIsLoading(false))
         }
-    }
-
+      }
     const socialAction = (action: string) =>{
         setIsLoading(true);
         //next auth social sign in
+        signIn(action, { redirect: false })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error('Invalid credentials!');
+        }
+
+        if (callback?.ok) {
+          toast.success('logged in')
+        }
+      })
+      .finally(() => setIsLoading(false));
     }
 
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-gray-200 px-4 py-8 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-gray-100 px-4 py-8 shadow sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 { variant==='SIGNUP' &&(<Input id="name" label="Name" register={register} errors={errors} disabled={isLoading}/>)}
                 <Input id="email" label="Email" register={register} errors={errors} disabled={isLoading}/>
