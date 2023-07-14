@@ -74,7 +74,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({isOpen,onClose,currentUser
                                     <Image width={48} height={48} className='rounded-full' src={image || currentUser?.image || '/images/placeholder.jpg'} alt="Avatar"/>
                                     <CldUploadButton options={{maxFiles:1}} onUpload={handleUpload} uploadPreset='ncoxcust'>
                                     <Button disabled={isLoading} secondary type="button" >
-                                        Changed
+                                        Change
                                     </Button>
                                     </CldUploadButton>
                                 </div>
